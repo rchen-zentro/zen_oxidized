@@ -11,11 +11,11 @@ class RouterOS < Oxidized::Model
       cfg.gsub! /^\r+(.+)/, '\1'
       cfg.gsub! /([^\r]*)\r+$/, '\1'
     end
-    cfg.lines.map { |line| line.rstrip }.join("\n") + "\n" # strip trailing whitespace
+    cfg
   end
 
-  cmd '/system resource print' do |cfg|
-    cfg = cfg.each_line.grep(/(version|factory-software|total-memory|cpu|cpu-count|total-hdd-space|architecture-name|board-name|platform):/).join
+  cmd '/system routerboard print' do |cfg|
+    cfg = cfg.each_line.grep(/(model|firmware-type|current-firmware|serial-number):/).join
     comment cfg
   end
 
@@ -25,18 +25,18 @@ class RouterOS < Oxidized::Model
     comment version_line
   end
 
-  cmd '/system history print without-paging' do |cfg|
-    comment cfg
-  end
+  #cmd '/system history print without-paging' do |cfg|
+  #  comment cfg
+  #end
 
   post do
-    logger.debug "Running /export for routeros version #{@ros_version}"
+    Oxidized.logger.debug "lib/oxidized/model/routeros.rb: running /export for routeros version #{@ros_version}"
     run_cmd = if vars(:remove_secret)
-                '/export hide-sensitive'
+                '/export terse hide-sensitive'
               elsif (not @ros_version.nil?) && (@ros_version >= 7)
-                '/export show-sensitive'
+                '/export terse show-sensitive'
               else
-                '/export'
+                '/export terse'
               end
     cmd run_cmd do |cfg|
       cfg.gsub! /\\\r?\n\s+/, '' # strip new line
@@ -45,10 +45,19 @@ class RouterOS < Oxidized::Model
       cfg.gsub! "# poe-out status: short_circuit\r\n", '' # Remove intermittent POE short_circuit comment
       cfg.gsub! "# Firmware upgraded successfully, please reboot for changes to take effect!\r\n", '' # Remove transient firmware upgrade comment
       cfg.gsub! /# \S+ not ready\r\n/, '' # Remove intermittent $interface not ready comment
-      cfg.gsub! /# .+ please restart the device in order to apply the new setting\r\n/, '' # Remove intermittent restart needed comment. (e.g. for ipv6 settings)
       cfg = cfg.split("\n")
       cfg.reject! { |line| line[/^#\s\w{3}\/\d{2}\/\d{4}.*$/] } # Remove date time and 'by RouterOS' comment (v6)
       cfg.reject! { |line| line[/^#\s\d{4}-\d{2}-\d{2}.*$/] }   # Remove date time and 'by RouterOS' comment (v7)
+      # Replace target IPs for lines with "name=mangle_"
+      cfg.map! do |line|
+        if line.include?("name=mangle_")
+          line.gsub(/target=[^ ]+/, 'target=127.0.0.127/32')
+        else
+          line
+        end
+      end
+      # Remove /queue tree lines with comment="DNM_"
+      cfg.reject! { |line| line.start_with?("/queue tree") && line.include?('comment="DNM_') }
       cfg.join("\n") + "\n"
     end
   end
