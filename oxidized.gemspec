@@ -46,20 +46,19 @@ Gem::Specification.new do |s|
   s.add_dependency 'syslog',               '~> 0.3.0'
   s.add_dependency 'syslog_protocol',      '~> 0.9.2'
 
-  s.add_development_dependency 'bundler',             '~> 2.2'
   # ruby-git 4.0 requests ruby >= 3.2, we stick to ruby >= 3.1 (Ubuntu Noble/Debian Bookworm)
   s.add_development_dependency 'git',                 '>= 2.0', '< 3.2.0'
-  s.add_development_dependency 'minitest',            '~> 5.25.4'
-  s.add_development_dependency 'mocha',               '~> 2.1'
+  s.add_development_dependency 'minitest',            '~> 5.27.0'
+  s.add_development_dependency 'mocha',               '~> 3.0'
   s.add_development_dependency 'pry',                 '~> 0.15.0'
   s.add_development_dependency 'rake',                '~> 13.0'
-  s.add_development_dependency 'rubocop',             '~> 1.79.1'
+  s.add_development_dependency 'rubocop',             '~> 1.82.0'
   s.add_development_dependency 'rubocop-minitest',    '~> 0.38.0'
   s.add_development_dependency 'rubocop-rake',        '~> 0.7.0'
   s.add_development_dependency 'rubocop-sequel',      '~> 0.4.0'
   s.add_development_dependency 'simplecov',           '~> 0.22.0'
 
   # Dependencies on optional libraries, used for unit tests & development
-  s.add_development_dependency 'oxidized-web',        '~> 0.17.1'
-  s.add_development_dependency 'sequel',              '>= 5.63.0', '< 5.96.0'
+  s.add_development_dependency 'oxidized-web',        '>= 0.17.1'
+  s.add_development_dependency 'sequel',              '>= 5.63.0', '< 5.100.0'
 end

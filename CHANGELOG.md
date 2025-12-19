@@ -7,14 +7,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- String refinements: introduce `keep_lines` and `reject_lines` methods (@robertcheramy)
+
+### Changed
+- Refactored models: Use `keep_lines` and `reject_lines` in aosw, arubainstant, asa, efos, firelinuxos, fsos, ironware, mlnxos and perle to (@robertcheramy)
+
+
+### Fixed
+- apc_aos: set comment to "; " to match comments in config.ini (@robertcheramy)
+- h3c: fix overly permissive prompt regexp causing false matches. Fixes #3673 (@robertcheramy)
+
+
+## [0.35.0 - 2025-12-04]
+### Release Notes
+- VyOS now has it's own model and should be used for supported VyOS versions instead of the Vyatta model.
+- AosCX has been reworked and may break old OS versions. Submit an issue along with a YAML Simulation File if you encounter problems.
+- TiMOS (deprecated model) has been removed. Use SROS.
+- FortiOs will be reworked in release 0.36 (Issue #3680). Subscribe to the issue if you want to be informed and test the model before the release.
+- Support for Ruby 3.1 will be discontinued in release 0.36 (Issue #3688) if no one objects.
+
+### Added
 - Allow setting timeout on per node basis. Closes #3612 (@ytti)
+- Added Vyos as individual model. Closes #3603 #3560 (@nicolasberens)
+- Add metadata to models. Closes #3249 (@robertcheramy)
+- perle: new model for console servers (@robertcheramy)
+- Introduce [conditional commands](/docs/Ruby-API.md#conditional-commands) (@robertcheramy)
 
 ### Changed
 - tnsr: added simulation data for older versions (@Vantomas)
+- docker image: change default shell to bash. (@electrocret)
+- refactor suppression of ANSI escape codes into model.rb (use `clean :escape_codes` in your model. Updated cumulus, garderos, mlnxos and vyos. (@robertcheramy)
+- aoscx: rework handling of ANSI escape codes (@robertcheramy)
+- docker: build on arm64 natively. Closes #3665 (@robertcheramy)
+- docker image: move base image from phusion/baseimage to debian:trixie-slim (@robertcheramy)
 
 ### Fixed
 - input/http: bracket IPv6 URI. Fixes #3620 (@ytti)
 - tnsr: fixed prompt regex, sometimes --More-- pager is misplaced on older versions (@ClumsyAdmin)
+- eatonnetwork: Update for firmware v2.2.0 #3634 (@thanegill)
+- input/http: Corrected pagination causing duplicated nodes. Fixes #3676 (@kquilliam)
+- many models: fix redundant regular expressions (@robertcheramy)
+- timos: remove deprecated model timos. Use sros. #3617 (@robertcheramy)
+- fsos: set terminal width to 0. Fixes #3576 (@robertcheramy)
+- aoscx: rework environmental data anonymization. Fixes #3568 (@robertcheramy, inspired by PR #3653 by @martadams89)
+- netgear: fix prompt issues caused by ANSI escape codes. Fixes #3287 (@robertcheramy)
+- remove redundant dependency on bundler producing a CI failure on ruby-head (@robertcheramy)
+- nxos: use "show inventory" when "show inventory all" is not supported. Fixes #3657 (@robertcheramy)
+- arubainstant: handle spaces/parentheses in AP names and add Zone column. Fixes #3611 (@iRomanyshyn, @robertcheramy)
+- core: fix "undefined method `[]' for nil" when only extensions: configured. Fixes: #3607 (@robertcheramy)
+
 
 ## [0.34.3 - 2025-08-05]
 This release fixes an issue preventing /node/show/<hostname> to work in oxidized-web.
